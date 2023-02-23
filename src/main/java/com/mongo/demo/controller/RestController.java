@@ -1,5 +1,9 @@
 package com.mongo.demo.controller;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,36 +31,72 @@ public class RestController {
 	
 	@GetMapping("/allemp")
 	@ResponseBody
-	public List<EmployeeModel> allEmployee() {
-		return emprepo.findAll();
+	public Map<String,Object> allEmployee() {
+		Map<String, Object> data = new HashMap<>();
+		List<EmployeeModel> lst = new ArrayList<>();
+		try {
+			lst = emprepo.findAll();
+		} catch (Exception e) {
+			data.put("Result", "Failed to get information");
+			return data;
+		}
+		data.put("Result", "Success");
+		data.put("products", lst);
+		return data;
 
 	}
 	@PostMapping("/save")
-	public String saveEmployee(@RequestBody EmployeeModel emp) {
+	public Map<String, Object> saveEmployee(@RequestBody EmployeeModel emp) {
+		Map<String, Object> data = new HashMap<>();
 		EmployeeModel exist = emprepo.findByEmail(emp.getEmail());
 		if(exist!=null)
 		{
-			return "employee "+emp.getName()+" already registerd ";
+			data.put("Result", "Success");
+			data.put("products", "user "+emp.getName()+" already registerd ");
+			return data;
 			
 		}
 		empser.saveEmployee(emp);
-		return "employee "+ emp.getName()+" successfully saved to database";
+		data.put("Result", "Success");
+		data.put("products", "user "+ emp.getName()+" successfully registerd");
+		return data;
 		
 	}
+	
+	@PostMapping("/login")
+	public Map<String,Object> logInEmployee(@RequestBody EmployeeModel emp) {
+		Map<String, Object> data = new HashMap<>();
+		
+		EmployeeModel exist = emprepo.findByEmailAndPassword(emp.getEmail(),emp.getPassword());
+		if(exist!=null)
+		{
+			data.put("userInfo", exist);
+			return data;
+			
+		}
+		data.put("userInfo", "invalid credentials/not found");
+		return data;
+	}
 	@PostMapping("/delete")
-	public String deleteEmployee(@RequestBody EmployeeModel emp) {
+	public Map<String, Object> deleteEmployee(@RequestBody EmployeeModel emp) {
+		Map<String, Object> data = new HashMap<>();
 		EmployeeModel exist = emprepo.findByEmail(emp.getEmail());
 		if(exist!=null)
 		{
 			emprepo.deleteByEmail(emp.getEmail());
-			return "employee "+ emp.getName()+" sexfully deleted from database";
+			data.put("Result", "Success");
+			data.put("products", "user "+emp.getName()+" deleted successfully ");
+			return data;
 			
 		}
-		return "employee "+emp.getName()+" not found ";
+		data.put("Result", "Failed");
+		data.put("products", "user "+emp.getName()+" not  found ");
+		return data;
 		
 	}
 	@PostMapping("/update")
-	public String updateEmployee(@RequestBody EmployeeModel emp) {
+	public Map<String, Object> updateEmployee(@RequestBody EmployeeModel emp) {
+		Map<String, Object> data = new HashMap<>();
 		EmployeeModel exist = emprepo.findByEmail(emp.getEmail());
 		if(exist!=null)
 		{
@@ -65,10 +105,13 @@ public class RestController {
 			exist.setName(emp.getName());
 			exist.setPassword(emp.getPassword());
 			empser.saveEmployee(exist);
-			return "employee "+ emp.getName()+" successfully update in database";
-			
+			data.put("Result", "Success");
+			data.put("products", "user "+emp.getName()+" successfully updated");
+			return data;
 		}
-		return "employee "+emp.getName()+" not found ";
+		data.put("Result", "Failed");
+		data.put("products", "user not found");
+		return data;
 		
 	}
 }

@@ -8,6 +8,8 @@ import com.mongo.demo.model.EmployeeModel;
 public interface EmployeeRepository extends MongoRepository<EmployeeModel, Integer>{
 	
 	EmployeeModel findByEmail(String email);
+	
+	EmployeeModel findByEmailAndPassword(String email,String password);
 
 	boolean deleteByEmail(String email);
 
