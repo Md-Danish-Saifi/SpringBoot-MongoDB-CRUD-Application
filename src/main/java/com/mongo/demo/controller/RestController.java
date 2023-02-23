@@ -40,7 +40,7 @@ public class RestController {
 			
 		}
 		empser.saveEmployee(emp);
-		return "employee "+ emp.getName()+" sexfully saved to database";
+		return "employee "+ emp.getName()+" successfully saved to database";
 		
 	}
 	@PostMapping("/delete")
@@ -65,7 +65,7 @@ public class RestController {
 			exist.setName(emp.getName());
 			exist.setPassword(emp.getPassword());
 			empser.saveEmployee(exist);
-			return "employee "+ emp.getName()+" sexfully update in database";
+			return "employee "+ emp.getName()+" successfully update in database";
 			
 		}
 		return "employee "+emp.getName()+" not found ";
